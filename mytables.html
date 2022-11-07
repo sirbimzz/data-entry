@@ -1,0 +1,164 @@
+﻿
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta name="description" content="Child Rows">
+        <title>Data Entry Portal</title>
+		<link rel="icon" type="image/x-icon" href="resources/NLNG_Logo.png">
+        <meta charset="utf-8" />
+       
+        <script src="scripts/jquery.min.js"></script>
+        <script src="scripts/jquery.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/jquery.dataTables.min.js"></script>
+         
+        <script src="scripts/dataTables.buttons.min.js"></script>	
+		<script src="scripts/buttons.html5.min.js"></script>
+		<script src="scripts/jszip.min.js"></script>
+        
+        <link rel="stylesheet" href="css/daterangepicker.css">
+        <link rel="stylesheet" href="css/daterangepicker2.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">        
+        <link rel="stylesheet" href="css/styles.css">
+    	<link rel="stylesheet" href="css/rowdetails.css">
+    	<link rel="stylesheet" href="css/clickable.css">    	
+    	<link rel="stylesheet" href="css/datatables.min.css">
+    	<link rel="stylesheet" href="css/buttons.dataTables.min.css">  
+        <link rel="stylesheet" href="fontawesome/css/all.min.css">  	
+ 
+    </head>
+
+    <body style="background-image: url('resources/dataentrybgd.png'); background-repeat: no-repeat; background-size: cover; background-attachment: fixed;">
+    	<div id="homepage" style="display: none;">
+			<div class="topBar">&nbsp;<i class="fas fa-align-left" style="cursor: pointer;"></i>&nbsp;&nbsp;Tables<i class="fas fa-user" style="float: right; margin-left: 10px; margin-right: 10px; padding-top: 3px;"></i><span id="currUser" style="float: right; font-weight: normal; font-size: 10pt; padding-top: 5px;"></span></div>
+			<br><br>
+
+			<div class="container1" id="tab2" style="background: none; width:335px; display:block;  margin-left: auto; margin-right: auto; float: left; margin-top: 10px;">
+				<div style="height:30px; padding-top:5px; float:left; width: 10px; margin-left:0px; border: 0px solid white; background:#03787c;"></div>
+				<a href="http://wapp-bny.nlng.net/datacentric/dataEntry/index.html"><div style="height:30px; padding-top:5px; float:left; text-align:center; width: 150px; cursor:pointer; margin-left:0px; border: 0px solid white; background:#03787c; color:white;" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">All Tables</div></a>
+				<div style="height:30px; padding-top:5px; float:left; width: 10px; margin-left:0px; border: 0px solid white; background:#03787c;"></div>
+				<div style="height:30px; padding-top:5px; float:left; text-align:center; width: 150px; background:none; margin-left:0px; border: 0px solid white; color:#03787c;">My Tables</div>
+				<div style="height:30px; padding-top:5px; float:left; width: 10px; margin-left:0px; border: 0px solid white; background:#03787c;"></div>
+			</div>
+
+			<div id="tables2" class="container2" style="width: 1000px; float: none; margin-top: 3%; margin-left: auto; margin-right: auto; display: block; border: 0px solid black; background:none">
+				<button class="btns" onclick="addRow()" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">New Table</button><br><br>
+				<div style="border: 1px solid #03787c;">
+					<table width="100%" class="display" id="myTables" cellspacing="0"></table>
+				</div>
+			</div>
+
+            <div id="id01" class="modal2"> 
+				<form name="addForm" class="modal-content animate" action="javascript:void(0);" style="width: 560px; background: #b0ecee;">
+					<div class="imgcontainer">
+					    <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Form" style="font-size:28pt;">&times;</span>
+					</div>
+					<div class="container" style="font-size: 9pt;">
+						<div id="addNew" style="font-size: 12pt; font-family: Futura Md BT; display: block"><b>New Table</b></div><div id="updateOld" style="font-size: 12pt; font-family: Futura Md BT; display: none"><b>Update <span id='tableNo'></span></b></div><br>
+						<table style="font-family: Futura Md BT; font-weight: normal;">
+							<tr>
+								<td><label>Table Name&nbsp;</label></td>
+								<td><input id="tableName" onchange="checkName()"></td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td><label>Table Dept&nbsp;</label></td>
+								<td><input id="tableDept"></td>
+							</tr>
+							<tr><td><br></td></tr>
+							<tr>
+								<td  colspan="5"><label>Provide details of the reporting frequency below:</label></td>
+							</tr>
+							<tr><td><br></td></tr>
+							<tr>
+								<td><label>Frequency</label></td>
+								<td>
+									<select id="reportFreq" onchange="showOption()">
+										<option value=""></option>
+										<option value="Daily">Daily</option>
+										<option value="Weekly">Weekly</option>
+                                        <option value="Monthly">Monthly</option>
+										<option value="Annually">Annually</option>
+									</select>
+								</td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td>
+									<label id="label1" style="display: none;">Day of the Week&nbsp;</label>
+									<label id="label2" style="display: none;">Date of the Month&nbsp;</label>
+									<label id="label3" style="display: none;">Month of the Year&nbsp;</label>
+								</td>
+								<td>
+									<select id="reportDay" style="display: none;">
+										<option value=""></option>
+										<option value="Sun">Sun</option>
+                                        <option value="Mon">Mon</option>
+										<option value="Tue">Tue</option>
+                                        <option value="Wed">Wed</option>
+										<option value="Thu">Thu</option>
+                                        <option value="Fri">Fri</option>
+                                        <option value="Sat">Sat</option>
+									</select>
+									<input id="reportDate" type="number" max="31" style="display: none;">
+									<select id="reportMonth" style="display: none;">
+										<option value=""></option>
+										<option value="Jan">Jan</option>
+                                        <option value="Feb">Feb</option>
+										<option value="Mar">Mar</option>
+                                        <option value="Apr">Apr</option>
+										<option value="May">May</option>
+                                        <option value="Jun">Jun</option>
+                                        <option value="Jul">Jul</option>
+                                        <option value="Aug">Aug</option>
+                                        <option value="Sep">Sep</option>
+										<option value="Oct">Oct</option>
+                                        <option value="Nov">Nov</option>
+										<option value="Dec">Dec</option>
+									</select>
+								</td>
+							</tr>
+                            <tr><td><br></td></tr>
+							<tr>
+								<td><label id="locLabel" style="display: block;">Email Prompts&nbsp;</label></td>
+								<td>
+									<select id="getPrompt">
+										<option value=""></option>
+										<option value="Yes">Yes</option>
+										<option value="No">No</option>
+									</select>
+								</td>
+								<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+								<td>&nbsp;</td>
+								<td><button class="btns" id="addItem" style="font-size: 9pt; width: 100%; display: block;">Add Table</button><button class="btns" id="updateItem" style="font-size: 9pt; width: 100%; display: none">Update Table</button></td>
+							</tr>
+						</table>
+					</div>
+				</form>
+			</div>
+        </div>
+        
+		<div id="session" class="modal"> 
+			<form name="newForm4" class="modal-content animate" style="font-family: Futura Md BT; height: 170px; width: 400px; background:#b0ecee; margin: 15% auto 15% auto;" action="javascript:void(0);">
+				<div class="imgcontainer">
+					<span style="color: grey; font-size:12pt;">&nbsp;Inactive Session </span>
+				</div>
+				<span style="margin-left: 20px;">Session has been idle. Page will logoff in <span id="timeLeft">-</span><br>
+				<span style="margin-left: 20px;">Click for more time</span><br><br>
+				<button class="btns" style="margin-left: 160px; width: 100px; cursor: pointer;" onclick="document.getElementById('session').style.display='none'" >More Time</button><br><br>
+			</form>
+		</div>
+        
+        <div id="loading" style="position:fixed; top:0;left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.7);margin:auto; display: block;">
+    		<div  class="loader" style="text-align:center;margin:auto; margin-top:400px;"></div>
+    		<!--div style="font-size:28pt; color:#fff; font-family:'Futura Bk BT'; width:800px;height:40px;text-align:center;margin:auto; margin-top:150px;">Loading Page. Please Wait...</div-->
+    	</div>
+
+		<div id="error" style="position:fixed; top:0;left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.7);margin:auto; display: none;">
+    		<div style="font-size:28pt; color:red; font-family:'Futura Bk BT'; width:800px;height:40px;text-align:center;margin:auto; margin-top:150px;">You do not have access to this page.<br>Please contact the Administrator</div>
+    	</div>
+
+
+        <script src="scripts/myTables2.js"></script>  
+        <script src="scripts/getData.js"></script>
+		<script src="scripts/postData.js"></script>
+		<script src="scripts/sendMail.js"></script>
+    </body>
+</html>

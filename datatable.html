@@ -1,0 +1,120 @@
+﻿
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <meta name="description" content="Child Rows">
+        <title>Data Entry Portal</title>
+        <link rel="icon" type="image/x-icon" href="resources/NLNG_Logo.png">
+        <meta charset="utf-8" />
+       
+        <script src="scripts/jquery.min.js"></script>
+        <script src="scripts/jquery.js"></script>
+        <script src="scripts/bootstrap.min.js"></script>
+        <script src="scripts/jquery.dataTables.min.js"></script>
+         
+        <script src="scripts/dataTables.buttons.min.js"></script>	
+		<script src="scripts/buttons.html5.min.js"></script>
+		<script src="scripts/jszip.min.js"></script>
+        
+        <link rel="stylesheet" href="css/daterangepicker.css">
+        <link rel="stylesheet" href="css/daterangepicker2.css">
+        <link rel="stylesheet" href="css/bootstrap.min.css">        
+        <link rel="stylesheet" href="css/styles.css">
+    	<link rel="stylesheet" href="css/rowdetails.css">
+    	<link rel="stylesheet" href="css/clickable.css">    	
+    	<link rel="stylesheet" href="css/datatables.min.css">
+    	<link rel="stylesheet" href="css/buttons.dataTables.min.css">
+        <link rel="stylesheet" href="fontawesome/css/all.min.css">
+ 
+    </head>
+
+
+    <body style="background-image: url('resources/dataentrybgd.png'); background-repeat: no-repeat; background-size: cover; background-attachment: fixed;">
+        <div id="loading" style="position:fixed; top:0;left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.7);margin:auto;">
+			<div  class="loader" style="text-align:center;margin:auto; margin-top:400px;"></div>
+    		<!--div style="font-size:28pt; color:#fff; font-family:'Futura Bk BT'; width:800px;height:40px;text-align:center;margin:auto; margin-top:150px;">Loading Page. Please Wait...</div-->
+    	</div>
+
+        <div id="error" style="position:fixed; top:0;left:0; width:100%; height:100%; background:rgba(0, 0, 0, 0.7);margin:auto; display: none;">
+    		<div style="font-size:28pt; color:red; font-family:'Futura Bk BT'; width:800px;height:40px;text-align:center;margin:auto; margin-top:150px;">You do not have access to this table.<br>Please contact the table owner</div>
+    	</div>
+
+    	<div id="homepage" style="display: none;">
+            <div id="session" class="modal2"> 
+                <form name="newForm4" class="modal-content animate" style="font-family: Futura Md BT; height: 170px; width: 400px; background:#b0ecee; margin: 15% auto 15% auto;" action="javascript:void(0);">
+                    <div class="imgcontainer">
+                        <span style="color: grey; font-size:12pt;">&nbsp;Inactive Session </span>
+                    </div>
+                    <span style="margin-left: 20px;">Session has been idle. Page will logoff in <span id="timeLeft">-</span><br>
+                    <span style="margin-left: 20px;">Click for more time</span><br><br>
+                    <button class="btns" style="margin-left: 160px; width: 100px; cursor: pointer;" onclick="document.getElementById('session').style.display='none'" >More Time</button><br><br>
+                </form>
+            </div>
+                  
+            <div class="topBar" style="position: relative;">&nbsp;<i class="fas fa-align-left" style="cursor: pointer;"></i>&nbsp;&nbsp;<span id='tableNo'></span><i class="fas fa-user" style="float: right; margin-left: 10px; margin-right: 10px; padding-top: 3px;"></i><span id="currUser" style="float: right; font-weight: normal; font-size: 10pt; padding-top: 5px;"></span></div><br>
+
+            <div class="container4" id="LL1" style="margin-left:auto; margin-right:auto; border: 0px solid black; background: none;">
+                <button class="btns" id="addRow" style="display: none; float: left;" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">New Data</button>
+                <!--a href="http://bny-s-t117/datacentric/uploadfile/index.html" target="popup" onclick="window.open('http://bny-s-t117/datacentric/uploadfile/index.html','popup','width=500,height=500,left=700,top=200');return false;">
+                    <button class="btns" id="batchUpload" style="display: none; margin-left: 10px; float: left;" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">Batch Upload</button>
+                </a-->
+                <button class="btns" id="batchUpload" style="display: none; margin-left: 10px; float: left;" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">Batch Upload</button>
+                <button class="btns" id="delAll" style="display: none; margin-left: 10px; float: left; background-color: orange;border: 3px solid orange;" onmouseover="this.style.background = 'none'; this.style.color = 'orange'" onmouseout="this.style.background = 'orange'; this.style.color = 'white'">Clear Table</button>
+                <button class="btns" onclick="getTable()" style="float: right;" onmouseover="this.style.background = 'none'; this.style.color = '#03787c'" onmouseout="this.style.background = '#03787c'; this.style.color = 'white'">Back to Tables</button><br><br><br>
+                <div style="border: 1px solid #03787c; background: none;">
+                    <table width="100%" class="display" id="dataEntry" cellspacing="0"></table>
+                </div>
+                <br>
+            </div>
+
+            <div id="id01" class="modal2" style="z-index: 2;font-family: Futura Md BT;"> 
+                <form name="addForm" class="modal-content animate" action="javascript:void(0);" style="width: 560px; background: #b0ecee;">
+                    <div class="imgcontainer">
+                        <span onclick="document.getElementById('id01').style.display='none'" class="close" title="Close Form" style="font-size:28pt;">&times;</span>
+                    </div>
+                    <div class="container" style="font-size: 9pt;">
+                        <div id="addNew" style="font-size: 12pt; font-family: Futura Md BT; display: block"><b>Batch Upload</b></div><br>
+                        <div style="color: red;">
+                            Currently Unavailable. Please contact the administrator for support.    
+                        </div>
+                        <div id="uploadPg" style="display: none;">
+                            <div>
+                                Kindly confirm that the following are met before upload<br><br>
+                                1. File must be .csv format<br><br>
+                                2. Your file should contain <span id="cCol"></span> columns with the following names and order:<br>
+                                <span id="colList" style="color: red;"></span><br>
+                                3. The "RecordDate" data should be in the format "dd/mm/yyyy"
+        
+                            </div><br>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <span id="uploadMsg" style="display: none; color: green;">File Uploaded Successfully!</span>
+                                        <input id="sortpicture" type="file" name="sortpic" style="width: 200px;">
+                                        <span id="dataPage" style="display: none;"></span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><br></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <button id="upload">Upload File</button>
+                                        <button id="upload2" style="display: none;">Complete Upload</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div id="loadPg" style="display: none;"><div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script src="scripts/dataEntry.js"></script>  
+        <script src="scripts/getData.js"></script>
+		<script src="scripts/postData.js"></script>
+		<script src="scripts/sendMail.js"></script>
+    </body>
+</html>
