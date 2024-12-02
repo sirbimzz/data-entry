@@ -12,15 +12,65 @@ function processUser(data){
     document.getElementById('currUser').innerHTML = titleCase(data);
 }
 
-function getActiveDir(data){
-    current["dir"] = sort_by_key(data, 'fullName');
-    var dataList  = '<datalist id="fName" style="font-size: 9pt;">';
-    for(i=0; i<current["dir"].length;i++){
-        dataList = dataList + "<option value='" + current["dir"][i].fullName + "'>"
+// function getActiveDir(data){
+//     current["dir"] = sort_by_key(data, 'fullName');
+//     var dataList  = '<datalist id="fName" style="font-size: 9pt;">';
+//     for(i=0; i<current["dir"].length;i++){
+//         dataList = dataList + "<option value='" + current["dir"][i].fullName + "'>"
+//     }
+//     dataList = dataList + "</datalist>"
+//     document.getElementById('dataList').innerHTML = dataList;
+// }
+
+document.getElementById('fullName').addEventListener('input', function() {
+    const query = this.value.trim();
+    const dropdown = document.getElementById('dropdown');
+    const apiUrl = `https://wapp-bny.nlng.net/adapi/api/AppUsers/SearchADUsers?samname=*${encodeURIComponent(query)}`;
+
+    if (query.length > 2) { // Fetch results if query length > 2
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Error fetching results: ${response.statusText}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                dropdown.innerHTML = '';
+                if (data.length > 0) {
+                    dropdown.style.display = 'block';
+                    data.forEach(item => {
+                        const div = document.createElement('div');
+                        div.textContent = item.username; // Adjust based on your API response structure
+                        div.addEventListener('click', () => {
+                            document.getElementById('fullName').value = item.username;
+                            document.getElementById('userName').value = lowCase(item.samAccountName);
+                            document.getElementById('userEmail').value = item.emailAddress;
+                            dropdown.style.display = 'none';
+                        });
+                        dropdown.appendChild(div);
+                    });
+                } else {
+                    dropdown.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                dropdown.innerHTML = '<div>No results found</div>';
+                dropdown.style.display = 'block';
+            });
+    } else {
+        dropdown.style.display = 'none';
     }
-    dataList = dataList + "</datalist>"
-    document.getElementById('dataList').innerHTML = dataList;
-}
+});
+
+// Hide dropdown when clicking outside
+document.addEventListener('click', (event) => {
+    const dropdown = document.getElementById('dropdown');
+    if (!event.target.closest('#dropdown') && !event.target.closest('#fullName')) {
+        dropdown.style.display = 'none';
+    }
+});
 
 function processAdmUsers(data){
 	current["AdmUsers"] = data;
@@ -195,6 +245,7 @@ function getFields(data){
         "columns": [
             { "data": "dataField", title:"Column Name" },
             { "data": "dataType", title:"Data Type" },
+            { "data": "dropList", title:"Drop-down Options" },
             { "data": "dataUOM", title:"UOM" },
             { "data": "dataTable" },
             { "data": "id" },
@@ -205,21 +256,24 @@ function getFields(data){
             },
         ],
         columnDefs: [ 
-            { "targets": [3,4], "visible": false },
+            { "targets": [4,5], "visible": false },
         ],
-        'searchCols': [
+        /*'searchCols': [
+            null,
             null,
             null,
             null,
             { 'sSearch': myCookies.selTable },
-        ],
-        "order": [[0, 'asc']],
+        ],*/
+        "order": [[5, 'asc']],
     });
+    table2.column(4).search('^' + myCookies.selTable + '$', true, false).draw();
+
     document.getElementById('tableNo').innerHTML = myCookies.selTable;
 
     $('#myFields tbody').on('click', 'i.delRow', function () {
-        table2.column(3).visible(true);
         table2.column(4).visible(true);
+        table2.column(5).visible(true);
         currentRow = {};
 
         var $row = $(this).closest("tr");
@@ -228,6 +282,7 @@ function getFields(data){
         var $tds2 = $row.find("td:eq(2)");
         var $tds3 = $row.find("td:eq(3)");
         var $tds4 = $row.find("td:eq(4)");
+        var $tds5 = $row.find("td:eq(5)");
 
         $.each($tds0, function(i, el) {
             var txt = $(this).text();
@@ -236,22 +291,26 @@ function getFields(data){
         $.each($tds1, function(i, el) {
             var txt = $(this).text();
             currentRow["dataType"] = txt;
-        });    
+        });  
         $.each($tds2, function(i, el) {
+            var txt = $(this).text();
+            currentRow["dropList"] = txt;
+        });    
+        $.each($tds3, function(i, el) {
             var txt = $(this).text();
             currentRow["dataUOM"] = txt;
         });
-        $.each($tds3, function(i, el) {
+        $.each($tds4, function(i, el) {
             var txt = $(this).text();
             currentRow["dataTable"] = txt;
         });
-        $.each($tds4, function(i, el) {
+        $.each($tds5, function(i, el) {
             var txt = $(this).text();
             currentRow["id"] = txt;
         });
 
-        table2.column(3).visible(false);
         table2.column(4).visible(false);
+        table2.column(5).visible(false);
 
         if (confirm("Confirm Delete of " + currentRow["dataField"])) {
             var postElement = "ALTER TABLE " + myCookies.selTable + " DROP COLUMN " + currentRow["dataField"];
@@ -269,8 +328,8 @@ function getFields(data){
         document.getElementById('updateOld').style.display='block';
         document.getElementById('addNew').style.display='none';
 
-        table2.column(3).visible(true);
         table2.column(4).visible(true);
+        table2.column(5).visible(true);
         currentRow = {};
 
         var $row = $(this).closest("tr");
@@ -279,6 +338,7 @@ function getFields(data){
         var $tds2 = $row.find("td:eq(2)");
         var $tds3 = $row.find("td:eq(3)");
         var $tds4 = $row.find("td:eq(4)");
+        var $tds5 = $row.find("td:eq(5)");
 
         $.each($tds0, function(i, el) {
             var txt = $(this).text();
@@ -287,27 +347,41 @@ function getFields(data){
         $.each($tds1, function(i, el) {
             var txt = $(this).text();
             currentRow["dataType"] = txt;
-        });    
+        });  
         $.each($tds2, function(i, el) {
+            var txt = $(this).text();
+            currentRow["dropList"] = txt;
+        });    
+        $.each($tds3, function(i, el) {
             var txt = $(this).text();
             currentRow["dataUOM"] = txt;
         });
-        $.each($tds3, function(i, el) {
+        $.each($tds4, function(i, el) {
             var txt = $(this).text();
             currentRow["dataTable"] = txt;
         });
-        $.each($tds4, function(i, el) {
+        $.each($tds5, function(i, el) {
             var txt = $(this).text();
             currentRow["id"] = txt;
         });
 
-        table2.column(3).visible(false);
         table2.column(4).visible(false);
+        table2.column(5).visible(false);
 
         document.getElementById('dataField').value = currentRow["dataField"];
         document.getElementById('dataUOM').value = currentRow["dataUOM"];
+        document.getElementById('dropList').value = currentRow["dropList"];
         var a = document.getElementById('dataType');
-        a.options[a.selectedIndex].text = currentRow['dataType'];   
+        a.options[a.selectedIndex].text = currentRow['dataType'];
+
+        //document.getElementById('dataField').disabled = true;
+
+        if (currentRow['dataType'] == "Drop-down List") {
+            $('#dl1').show() && $('#dl2').show()
+        }
+        else {
+            $('#dl1').hide() && $('#dl2').hide()
+        }
     });
     if(myCookies.selTable == "" || myCookies.selTable == undefined){
         document.getElementById('homepage').style.display='none';
@@ -343,17 +417,17 @@ var getCookies = function(){
   
 var myCookies = getCookies();
 
-function popUser(){
-    //var fullName = document.getElementById('fullName').value;
-    var fullName = document.querySelector('#fullName').value;
-    for(var i = 0; i < current["dir"].length; i++) {
-        if(current["dir"][i].fullName == fullName){
-            document.getElementById('userName').value = (current["dir"][i].userName).toLowerCase();
-            document.getElementById('userEmail').value = (current["dir"][i].userEmail).toLowerCase();
-        }
-    }
+// function popUser(){
+//     //var fullName = document.getElementById('fullName').value;
+//     var fullName = document.querySelector('#fullName').value;
+//     for(var i = 0; i < current["dir"].length; i++) {
+//         if(current["dir"][i].fullName == fullName){
+//             document.getElementById('userName').value = (current["dir"][i].userName).toLowerCase();
+//             document.getElementById('userEmail').value = (current["dir"][i].userEmail).toLowerCase();
+//         }
+//     }
 
-}
+// }
 
 function setupTable(data){
 
@@ -382,6 +456,13 @@ $('#addItem').click(function(){
     var a = document.getElementById("dataType");
     var dataType = a.options[a.selectedIndex].text;
 
+    if(dataType == "Drop-down List"){
+        var dropList = document.getElementById('dropList').value;
+    }
+    else{
+        var dropList = "";
+    }
+
     if(dataType == "Date" || dataType == "DateTime"){
         var dataType2 = "varchar(2000)"
     }
@@ -398,6 +479,9 @@ $('#addItem').click(function(){
     else if(dataType == ""){
         alert("Please select the data type")
     }
+    else if(dataType == "Drop-down List" && dropList == ""){
+        alert("Please enter the drop-down options")
+    }
     else{
         for(i=0; i<current["Fields"].length;i++){
             if (dataTable == current["Fields"][i].dataTable && dataField == current["Fields"][i].dataField){
@@ -413,10 +497,9 @@ $('#addItem').click(function(){
         }
         else{
             var alterString = 'ALTER TABLE ' + dataTable + ' ADD ' + dataField + ' ' + dataType2;
-            var postElement = "INSERT INTO dataFields VALUES ('" + dataField + "','" + dataTable + "','" + dataType + "','" + dataUOM + "')";
+            var postElement = "INSERT INTO dataFields VALUES ('" + dataField + "','" + dataTable + "','" + dataType + "','" + dataUOM + "','" + dropList + "')";
 
-            postDb (postElement);
-            postDb (alterString);
+            postDb (alterString + '; ' + postElement);
             location.reload();
         }
     }
@@ -425,15 +508,35 @@ $('#addItem').click(function(){
 $('#updateItem').click(function(){
     var dataField = document.getElementById('dataField').value;
     var dataUOM = document.getElementById('dataUOM').value;
+    var dataTable = myCookies.selTable;
     var a = document.getElementById("dataType");
     var dataType = a.options[a.selectedIndex].text;
-    var oldName = myCookies.selTable + '.' + currentRow["dataField"]; 
+
+    if(dataType == "Drop-down List"){
+        var dropList = document.getElementById('dropList').value;
+    }
+    else{
+        var dropList = "";
+    }
+
+    if(dataType == "Date" || dataType == "DateTime"){
+        var dataType2 = "varchar(2000)"
+    }
+    else if(dataType == "Number"){
+        var dataType2 = "varchar(2000)"
+    }
+    else{
+        var dataType2 = "varchar(2000)"
+    }
 
     if(dataField == ""){
         alert("Please enter a column name")
     }
     else if(dataType == ""){
         alert("Please select the data type")
+    }
+    else if(dataType == "Drop-down List" && dropList == ""){
+        alert("Please enter the drop-down options")
     }
     else{
         if(dataField == currentRow["dataField"]){
@@ -454,15 +557,26 @@ $('#updateItem').click(function(){
             alert("Column name already exists for selected table, please use another column name");
         }
         else{
-            var postElement = "UPDATE dataFields SET dataField='" + dataField + "', dataType='" + dataType + "', dataUOM='" + dataUOM + "' WHERE id=" + currentRow["id"];
-            var postElement2 = "sp_rename '" + oldName + "', '" + dataField + "', 'COLUMN'";
+            var postElement = "UPDATE dataFields SET dataField='" + dataField + "', dataType='" + dataType + "', dataUOM='" + dataUOM + "', dropList='" + dropList + "' WHERE id=" + currentRow["id"];
+            //var postElement2 = "sp_rename '" + currentRow["dataField"] + "', '" + dataField + "', 'COLUMN'";
 
-            postDb(postElement);
-            postDb(postElement2);
+            //postDb(postElement + '; ' + postElement2);
+            postDb(postElement)
             location.reload();
         }
     }
 });
+
+function showList() {
+    var a = document.getElementById("dataType");
+	var dataType = a.options[a.selectedIndex].text;
+	if (dataType == "Drop-down List") {
+		$('#dl1').show() && $('#dl2').show()
+	}
+	else {
+        $('#dl1').hide() && $('#dl2').hide()
+	}
+}
 
 $('#addUser').click(function(){
     var tableName = myCookies.selTable;
@@ -507,6 +621,7 @@ $('#addUser').click(function(){
 });
 
 $('#updateUser').click(function(){
+    var tableName = myCookies.selTable;
     var fullName = document.getElementById('fullName').value;
     var userName = document.getElementById('userName').value;
     var userEmail = document.getElementById('userEmail').value;
@@ -732,7 +847,7 @@ function convDate(d){
 
     return dformat;
 }
-
+/*
 onInactive(3 * 60 * 1000, function () {
     document.getElementById('session').style.display='block';
     // Set the date we're counting down to
@@ -755,7 +870,7 @@ function postVisit(){
 	var postElement = "INSERT INTO Page_Visits VALUES(";
 	var RecordDate2 = formatDate(new Date());
 	var Logoff_Time = "";
-	var Page_Link = "datacentric/dataEntry/datatable.html";
+	var Page_Link = "datacentric/dataEntry/config.html";
 	var Comment = "";
 	var UpdatedDate = formatDate(new Date());
 	var UpdatedBy = "DataSys";
@@ -793,3 +908,4 @@ var x = setInterval(function() {
   // Output the result in an element with id="timeLeft"
   document.getElementById("timeLeft").innerHTML = minutes + "m " + seconds + "s ";
 }, 1000);
+*/

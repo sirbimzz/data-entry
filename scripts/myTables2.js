@@ -498,16 +498,17 @@ $('#addItem').click(function(){
             alert("Table name already exists, please use another table name");
         }
         else{
-            var postElement = "CREATE TABLE " + tableName + " ( id int IDENTITY(1,1) PRIMARY KEY, RecordDate datetime, UpdatedDate datetime, UpdatedBy varchar(2000))";
+            var postElement1 = "CREATE TABLE " + tableName + " ( id int IDENTITY(1,1) PRIMARY KEY, RecordDate datetime, UpdatedDate datetime, UpdatedBy varchar(2000))";
 
             var postElement2 = "INSERT INTO dataTables VALUES ('" + dateCreated + "','" + tableName + "','" + tableOwner + "','" + tableDept + "','" + 
                 reportFreq + "','" + reportDay + "','" + reportDate + "','" + reportMonth+ "','" + getPrompt + "','" + lastUpdate+ "','" + lastUpdate2+ "','" + entryNo + "')";
             
             var postElement3 = "INSERT INTO dataUsers VALUES ('" + tableName + "','" + fullName + "','" + userName + "','" + userEmail + "','" + userAccess+ "')";
 
-            postDb (postElement2);
-            postDb (postElement3);
-            postDb (postElement);
+            var postElement = postElement1 + '; ' +  postElement2 + '; '  + postElement3 + ';'
+
+
+            postDb (postElement); 
             location.reload();
         }
     }
@@ -801,7 +802,7 @@ function convDate(d){
 
     return dformat;
 }
-
+/*
 onInactive(3 * 60 * 1000, function () {
     document.getElementById('session').style.display='block';
     // Set the date we're counting down to
@@ -862,3 +863,4 @@ var x = setInterval(function() {
   // Output the result in an element with id="timeLeft"
   document.getElementById("timeLeft").innerHTML = minutes + "m " + seconds + "s ";
 }, 1000);
+*/

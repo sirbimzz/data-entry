@@ -32,7 +32,7 @@ $.ajax({
                                     cache: false,
                                     success : function(data){
                                         var obj = jQuery.parseJSON(data);
-                                        getActiveDir(obj);
+                                        //getActiveDir(obj);
                                         $.ajax({
                                             url : 'php/getDataTables.php', // your php file
                                             type : 'GET', // type of the HTTP request

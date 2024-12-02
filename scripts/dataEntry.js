@@ -65,6 +65,19 @@ function checkDataType(col, tabl){
         else{}
     }
 }
+function daysInMonth (date) {
+    var month = (new Date(date)).getMonth() +1;
+    var year = (new Date(date)).getFullYear();
+    return new Date(year, month, 0).getDate();
+}
+function convNo(txt){
+    if(txt==""){
+        return 0
+    }
+    else{
+        return parseFloat(txt)
+    }
+}
 
 function setupTable(data){
     current["data"] = data;
@@ -74,25 +87,43 @@ function setupTable(data){
     var thisArray = [];
     var thisdata2 = {};
     var thisArray2 = [];
+    var thisdata3 = {};
+    var thisArray3 = [];
     current["count"] = 0;
 
-    thisdata.data = 'RecordDate'
-    thisdata.title = 'RecordDate'
-    thisdata2.data = 'RecordDate'
-    thisdata2.title = 'RecordDate'
-    thisdata2.type = ''
-    thisdata.render = dateRender
-    thisArray.push({...thisdata})
-    thisArray2.push({...thisdata2})
-
-    newRow['RecordDate'] = formatDate(new Date());
+    if(myCookies.currTable == 'dt_divisional_kpis.audit_reviews_and_assurances' || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services'){
+        thisdata.data = 'RECORD_ID'
+        thisdata.title = 'RecordDate'
+        thisdata2.data = 'RECORD_ID'
+        thisdata2.title = 'RecordDate'
+        thisdata2.type = ''
+        thisdata.render = dateRender2
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+        newRow['RECORD_ID'] = unRender(formatDate(new Date()));
+    }
+    else {
+        thisdata.data = 'RecordDate'
+        thisdata.title = 'RecordDate'
+        thisdata2.data = 'RecordDate'
+        thisdata2.title = 'RecordDate'
+        thisdata2.type = ''
+        thisdata.render = dateRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+        newRow['RecordDate'] = formatDate(new Date());
+    }
 
     for(i=0; i<current["Fields"].length;i++){
         if(current["Fields"][i].dataTable == myCookies.currTable){
             thisdata.data = current["Fields"][i].dataField;
             thisdata.title = current["Fields"][i].dataField + showUnit(current["Fields"][i].dataUOM);
+
             thisdata2.data = current["Fields"][i].dataField;
             thisdata2.title = current["Fields"][i].dataField;
+
+            thisdata3.data = current["Fields"][i].dataField;
+            thisdata3.list = current["Fields"][i].dropList;
 
             newRow[current["Fields"][i].dataField] = "";
 
@@ -103,7 +134,7 @@ function setupTable(data){
                 thisdata.render = dateTimeRender;
             }
             else if(current["Fields"][i].dataType == "Number"){
-                thisdata.render = noRender;
+                thisdata.render = numberWithCommas;
             }
             else{
                 thisdata.render = noRender;
@@ -111,37 +142,68 @@ function setupTable(data){
             thisdata2.type = current["Fields"][i].dataType;
             thisArray.push({...thisdata})
             thisArray2.push({...thisdata2})
+            thisArray3.push({...thisdata3})
             current["count"] = current["count"]+1;
         }
         else{}
     }
 
-    thisdata.data = 'UpdatedDate'
-    thisdata.title = 'UpdatedDate'
-    thisdata2.data = 'UpdatedDate'
-    thisdata2.title = 'UpdatedDate'
-    thisdata2.type = ''
-    thisdata.render = dateRender
-    thisArray.push({...thisdata})
-    thisArray2.push({...thisdata2})
+    if(myCookies.currTable == 'dt_divisional_kpis.audit_reviews_and_assurances' || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services'){
+        thisdata.data = 'UPDATED'
+        thisdata.title = 'UpdatedDate'
+        thisdata2.data = 'UPDATED'
+        thisdata2.title = 'UpdatedDate'
+        thisdata2.type = ''
+        thisdata.render = dateRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
 
-    thisdata.data = 'UpdatedBy'
-    thisdata.title = 'UpdatedBy'
-    thisdata2.data = 'UpdatedBy'
-    thisdata2.title = 'UpdatedBy'
-    thisdata2.type = ''
-    thisdata.render = noRender
-    thisArray.push({...thisdata})
-    thisArray2.push({...thisdata2})
+        thisdata.data = 'UPDATED_BY'
+        thisdata.title = 'UpdatedBy'
+        thisdata2.data = 'UPDATED_BY'
+        thisdata2.title = 'UpdatedBy'
+        thisdata2.type = ''
+        thisdata.render = noRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
 
-    thisdata.data = 'id'
-    thisdata.title = 'ID'
-    thisdata2.data = 'id'
-    thisdata2.title = 'ID'
-    thisdata2.type = ''
-    thisdata.render = noRender
-    thisArray.push({...thisdata})
-    thisArray2.push({...thisdata2})
+        thisdata.data = null
+        thisdata.title = 'ID'
+        thisdata2.data = null
+        thisdata2.title = 'ID'
+        thisdata2.type = ''
+        thisdata.render = noRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+    }
+    else {
+        thisdata.data = 'UpdatedDate'
+        thisdata.title = 'UpdatedDate'
+        thisdata2.data = 'UpdatedDate'
+        thisdata2.title = 'UpdatedDate'
+        thisdata2.type = ''
+        thisdata.render = dateRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+
+        thisdata.data = 'UpdatedBy'
+        thisdata.title = 'UpdatedBy'
+        thisdata2.data = 'UpdatedBy'
+        thisdata2.title = 'UpdatedBy'
+        thisdata2.type = ''
+        thisdata.render = noRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+
+        thisdata.data = 'id'
+        thisdata.title = 'ID'
+        thisdata2.data = 'id'
+        thisdata2.title = 'ID'
+        thisdata2.type = ''
+        thisdata.render = noRender
+        thisArray.push({...thisdata})
+        thisArray2.push({...thisdata2})
+    }
 
     thisdata.data = null;
     thisdata.title = 'Action'
@@ -152,19 +214,52 @@ function setupTable(data){
     thisArray.push({...thisdata})
     thisArray2.push({...thisdata2})
 
-    newRow['id'] = "";
-    newRow['UpdatedDate'] = "";
-    newRow['UpdatedBy'] = "";
-    current["newRow"] = newRow;
+    thisdata.data = null;
+    thisdata.title = 'Action'
+    thisdata2.data = null
+    thisdata2.title = 'Action2'
+    thisdata2.type = ''
+    thisdata.render = editRender2
+    thisArray.push({...thisdata})
+    thisArray2.push({...thisdata2})
+
+    if(myCookies.currTable == 'dt_divisional_kpis.audit_reviews_and_assurances' || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services'){
+        newRow['UPDATED'] = "";
+        newRow['UPDATED_BY'] = "";
+        current["newRow"] = newRow;
+    }
+    else {
+        newRow['id'] = "";
+        newRow['UpdatedDate'] = "";
+        newRow['UpdatedBy'] = "";
+        current["newRow"] = newRow;
+    }
 
     current["tableDef"] = thisArray;
     current["tableDef2"] = thisArray2;
+    current["List"] = thisArray3;
+
+    //current["highlightRules"] = "if(data.id==''){$('td', row).addClass('highlightRow')}"
 
     setTable(data);
 }
 
 function editRender(data){
     return '<i class="editRow" style="font-size:11pt; color:blue; cursor: pointer;"><i class="fas fa-edit" title="Edit"></i></i>';
+}
+
+function editRender2(data){
+    return '';
+}
+
+function numberWithCommas(x) {
+    if(x == ""){
+        return "";
+    }
+    else{
+        x = (parseFloat(x)).toFixed(2);
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
 }
 
   	
@@ -177,9 +272,14 @@ function setTable(data){
 
     var table = $('#dataEntry').DataTable({
         "rowCallback": function( row, data ) {
-            if ( data.id == "" ) {
-                $('td', row).addClass('highlightRow');
-            }
+            if(data.id==''){$('td', row).addClass('highlightRow')}
+
+            if(myCookies.currTable == 'ROB_Report'&&data.Category=='Laden'){$('td', row).addClass('ladenColor')}
+            if(myCookies.currTable == 'ROB_Report'&&data.Category=='Loading/Discharging'){$('td', row).addClass('loadColor')}
+            if(myCookies.currTable == 'ROB_Report'&&data.Category=='Dry Dock/Intermediate Survey/Refit'){$('td', row).addClass('dryColor')}
+            if(myCookies.currTable == 'ROB_Report'&&data.Category=='Sub Charter'){$('td', row).addClass('subColor')}
+
+            if(myCookies.currTable == 'GHG_Shipping_Monthly' && (data.CO2e<0 || data.CO2<0 || data.N20<0 || data.CH4<0 || data.CII<0)){$('td', row).addClass('badData')}
         },
         deferLoading:true,
         paging: false,
@@ -195,8 +295,9 @@ function setTable(data){
         "columns": current["tableDef"],
         columnDefs: [ 
             { type: 'date', 'targets': [0, current["count"]+1] },
+            //{ "bSortable": false, "aTargets": [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10] }
         ],
-        "order": [[0, 'desc'], [current["count"]+3, 'desc']],
+        "order": [[0, 'desc'], [current["count"]+3, 'asc']],
     });
 
     $('#addRow').on('click', function () {
@@ -204,6 +305,15 @@ function setTable(data){
     });
 
     table.column(current["count"]+3).visible(false);
+    table.column(current["count"]+5).visible(false);
+
+    // Special set up for Fin fans table based on user request
+    if (myCookies.currTable == "TR4_Fin_Fans" || myCookies.currTable == "TR5_Fin_Fans" || myCookies.currTable == "TR6_Fin_Fans") {
+        table.column(0).visible(false);
+        table.column(5).visible(false);
+        table.column(11).visible(false);
+        table.column(12).visible(false);
+    }
 
     if(myCookies.currTable == undefined || myCookies.currTable == ""){
         document.getElementById('homepage').style.display='none';
@@ -215,8 +325,8 @@ function setTable(data){
             if((current["user"] ==rowCollection["usersData"][i].userName && rowCollection["usersData"][i].tableName == myCookies.currTable && rowCollection["usersData"][i].userAccess == "Admin") || (current["user"] ==rowCollection["usersData"][i].userName && rowCollection["usersData"][i].tableName == myCookies.currTable && rowCollection["usersData"][i].userAccess == "Read & Write")){
                 table.column(current["count"]+4).visible(true);
                 document.getElementById('addRow').style.display='block';
-                document.getElementById('batchUpload').style.display='block';
-                document.getElementById('delAll').style.display='block';
+                //document.getElementById('batchUpload').style.display='block';
+                document.getElementById('delAll').style.display='none';
                 document.getElementById('homepage').style.display='block';
                 document.getElementById('loading').style.display='none';
                 document.getElementById('error').style.display='none';
@@ -237,18 +347,94 @@ function setTable(data){
                 document.getElementById('loading').style.display='none';
                 document.getElementById('error').style.display='block';
                 document.getElementById('addRow').style.display='none';
-                document.getElementById('batchUpload').style.display='none';
+                //document.getElementById('batchUpload').style.display='none';
                 document.getElementById('delAll').style.display='none';
             }
         }
     }
     document.getElementById('tableNo').innerHTML = myCookies.currTable;
-    postVisit()
+
+    if (myCookies.currTable == "TR4_Fin_Fans" || myCookies.currTable == "TR5_Fin_Fans" || myCookies.currTable == "TR6_Fin_Fans") {
+        document.getElementById('addRow').style.display='none';
+    }
+
+    /*
+    $('#dataEntry thead th').each(function() {
+        var title = $(this).text();
+        if(title == 'CO2 (T)'){
+          $(this).append('<br /><input>');		  
+        }
+        var title = $(this).text();
+        if(title == 'CO2e (T)'){
+          $(this).append('<br /><input>');		  
+        }
+        var title = $(this).text();
+        if(title == 'N2O (T)'){
+          $(this).append('<br /><input>');		  
+        }
+        var title = $(this).text();
+        if(title == 'CH4 (T)'){
+          $(this).append('<br /><input>');		  
+        }
+        var title = $(this).text();
+        if(title == 'CII (T)'){
+          $(this).append('<br /><input>');		  
+        }
+      });
+    */
+
+    $('#dataEntry thead th').each(function() {
+        if (myCookies.currTable == 'MSE_Actions') {
+            $('th.sorting').off();
+            var title = $(this).text();
+            if(title == 'RecordDate' || title == 'MSE_ID' || title == 'MSE_ID' || title == 'sNo' || title == 'MSE_Themes' || title == 'MSE_Who' || title == 'MSE_When' || title == 'UpdatedDate'){
+                $(this).append('<br /><input style="color: black;">');		  
+            }
+        }
+        
+    });
+
+    table.columns().every( function () {
+        var that = this;
+             
+        $( 'select', this.header() ).on( 'keyup change', function () {
+          if ( that.search() !== this.value ) {
+            that
+            .search( this.value )
+            .draw();
+          }
+        } );
+        $( 'textarea', this.header() ).on( 'keyup change', function () {
+          if ( that.search() !== this.value ) {
+            that
+            .search( this.value )
+            .draw();
+          }
+        } );
+        $( 'input', this.header() ).on( 'keyup change', function () {
+          if ( that.search() !== this.value ) {
+            that
+            .search( this.value )
+            .draw();
+          }
+        } );
+    });
+
+    //postVisit() 
     
     //Edit Rows
     $('#dataEntry tbody').on('click', 'i.editRow', function () {
         currentRow = {};
         table.column(current["count"]+3).visible(true);
+        table.column(current["count"]+5).visible(true);
+
+        //special set up for fin fans tables
+        if (myCookies.currTable == "TR4_Fin_Fans" || myCookies.currTable == "TR5_Fin_Fans" || myCookies.currTable == "TR6_Fin_Fans") {
+            table.column(0).visible(true);
+            table.column(5).visible(true);
+            table.column(11).visible(true);
+            table.column(12).visible(true);
+        }
 
         var $row = $(this).closest("tr");
         for(j=0; j<current["tableDef2"].length;j++){
@@ -281,26 +467,43 @@ function setTable(data){
             else if(current["tableDef2"][j].type == "Number"){
                 var $tdsj = $row.find('td:eq('+ j +')');
                 $.each($tdsj, function(i, el) {
-                    var txt = $(this).text();
+                    var txt = ($(this).text()).replace(/\,/g,'');
                     $(this).text('');
-                    $(this).append('<input type="number" id="' + thisID + '" value="' + txt + '">');
+                    $(this).append('<input type="number" id="' + thisID + '" value="' + parseFloat(txt) + '">');
                 });
             }
-            else if (current["tableDef2"][j].title == "UpdatedDate"){}
-            else if (current["tableDef2"][j].title == "UpdatedBy"){}
-            else if (current["tableDef2"][j].title == "ID"){
+            else if(current["tableDef2"][j].type == "Drop-down List"){
+                var $tdsj = $row.find('td:eq('+ j +')');
+                $.each($tdsj, function(i, el) {
+                    var txt = $(this).text();
+                    $(this).text('');
+                    $(this).append('<select id="' + thisID + '">' + getList(current["tableDef2"][j].title) + '</select>');
+                    var a = document.getElementById(String(thisID));
+                    a.options[a.selectedIndex].text = txt; 
+                });
+            }
+            else if (current["tableDef2"][j].title == "Action2" && (myCookies.currTable == "TR4_Fin_Fans" || myCookies.currTable == "TR5_Fin_Fans" || myCookies.currTable == "TR6_Fin_Fans")){
                 var $tdsj = $row.find('td:eq('+ j +')');
                 $.each($tdsj, function(i, el) {
                     var txt = $(this).text(); 
-                    currentRow["id"] = txt;
+                    $(this).text('');
+                    $(this).append('<i class="saveRow" style="font-size:11pt; color:green; cursor: pointer;"><i class="fas fa-save" title="Save"></i></i>');
                 });
             }
-            else if (current["tableDef2"][j].title == "Action"){
+            else if (current["tableDef2"][j].title == "Action2"){
                 var $tdsj = $row.find('td:eq('+ j +')');
                 $.each($tdsj, function(i, el) {
                     var txt = $(this).text(); 
                     $(this).text('');
                     $(this).append('<i class="saveRow" style="font-size:11pt; color:green; cursor: pointer;"><i class="fas fa-save" title="Save"></i></i>&nbsp;&nbsp;&nbsp;<i class="delRow" style="font-size:11pt; color:red; cursor: pointer;"><i class="fas fa-trash-alt" title="Delete"></i></i>');
+                });
+            }
+            else if (current["tableDef2"][j].data == null || current["tableDef2"][j].title == "UpdatedBy" || current["tableDef2"][j].title == "UpdatedDate"){}
+            else if (current["tableDef2"][j].title == "ID"){
+                var $tdsj = $row.find('td:eq('+ j +')');
+                $.each($tdsj, function(i, el) {
+                    var txt = $(this).text(); 
+                    currentRow["id"] = txt;
                 });
             }
             else if(current["tableDef2"][j].type == "Long Text"){
@@ -320,7 +523,16 @@ function setTable(data){
                 });
             }
         }
-        table.column(current["count"]+3).visible(false);        
+        table.column(current["count"]+3).visible(false);
+        table.column(current["count"]+4).visible(false); 
+
+        //special set up for fin fans table
+        // if (myCookies.currTable == "TR4_Fin_Fans" || myCookies.currTable == "TR5_Fin_Fans" || myCookies.currTable == "TR6_Fin_Fans") { {
+        //     table.column(0).visible(false);
+        //     table.column(5).visible(false);
+        //     table.column(11).visible(false);
+        //     table.column(12).visible(false);
+        // }
     })
     $('#dataEntry tbody').on('click', 'i.delRow', function () {
         if (confirm("Confirm Delete")) {
@@ -330,8 +542,17 @@ function setTable(data){
 
             var postElement = "UPDATE dataTables SET lastUpdate2='" + lastUpdate2 + "', entryNo='" + entryNo + "' WHERE tableName='" + tableName + "'";
 
-            deleteData(currentRow["id"]);
-            postDb(postElement);
+            if (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services'){
+                var postElement2 = "DELETE FROM " + tableName + " WHERE RECORD_ID=" + unRender(currentRow["RecordDate"]);
+            }
+            else {
+                var postElement2 = "DELETE FROM " + tableName + " WHERE id=" + currentRow["id"];
+            }
+
+            postElement = postElement + "; " + postElement2;
+
+            //deleteData(currentRow["id"]);
+            postDb (postElement);
             location.reload();
         } else {}
     })
@@ -343,37 +564,73 @@ function setTable(data){
         var lastUpdate2 = formatDate2(new Date());
         var entryNo = data.length;
 
-        if(currentRow["id"] == ''){
+        if(currentRow["id"] == '' || String(currentRow["id"])  == "undefined"){
             var postElement = "INSERT INTO " + myCookies.currTable + " (";
 
-            for(i=0; i<current["tableDef2"].length - 2;i++){
-                var thisID = String(current["tableDef2"][i].title)
-                var currField = thisID;
-                postElement = postElement + currField + ","
+            for(i=0; i<current["tableDef2"].length - 3; i++){
+                if(current["tableDef2"][i].data == null){}
+                else if(String(current["tableDef2"][i].title) == "RecordDate" && (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services')){
+                    var thisID = "RECORD_ID"
+                    var currField = thisID;
+                    postElement = postElement + currField + ","
+                } 
+                else if(String(current["tableDef2"][i].title) == "UpdatedDate" && (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services')){
+                    var thisID = "UPDATED"
+                    var currField = thisID;
+                    postElement = postElement + currField + ","
+                } 
+                else if(String(current["tableDef2"][i].title) == "UpdatedBy" && (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services')){
+                    var thisID = "UPDATED_BY"
+                    var currField = thisID;
+                    postElement = postElement + currField + ","
+                } 
+                else{
+                    var thisID = String(current["tableDef2"][i].title)
+                    var currField = thisID;
+                    postElement = postElement + currField + ","
+                }                
             }
             postElement = postElement.substring(0, postElement.length - 1) + ") VALUES (";
 
-            for(i=0; i<current["tableDef2"].length - 4;i++){
+            for(i=0; i<current["tableDef2"].length - 5; i++){
                 if(current["tableDef2"][i].title == "RecordDate"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDate(document.getElementById(thisID).value);
-                    postElement = postElement + "'" + currData + "',"
+                    postElement = postElement + "'" + unRender(currData) + "',"
                 }
                 else if(current["tableDef2"][i].type == "Date"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDate(document.getElementById(thisID).value);
-                    postElement = postElement + "'" + currData + "',"
+                    if (currData == 'NaN-NaN-NaN'){
+                        postElement = postElement + "'',"
+                    }
+                    else{
+                        postElement = postElement + "'" + currData + "',"
+                    }
                 }
                 else if(current["tableDef2"][i].type == "DateTime"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDateTime(document.getElementById(thisID).value);
+                    if (currData == 'NaN-NaN-NaN'){
+                        postElement = postElement + "'',"
+                    }
+                    else{
+                        postElement = postElement + "'" + currData + "',"
+                    }
+                }
+                else if(current["tableDef2"][i].type == "Drop-down List"){
+                    var thisID = String(current["tableDef2"][i].title)
+                    var currField = thisID;
+                    var a = document.getElementById(thisID);
+                    var currData = a.options[a.selectedIndex].text;
                     postElement = postElement + "'" + currData + "',"
                 }
+                else if(current["tableDef2"][i].data == "Planned_Availability"){}
                 else{
-                    var thisID = String(current["tableDef2"][i].title)
+                    var thisID = String(current["tableDef2"][i].title);
                     var currField = thisID;
                     var currData = document.getElementById(thisID).value;
                     postElement = postElement + "'" + currData + "',"
@@ -383,45 +640,77 @@ function setTable(data){
 
             var postElement2 = "UPDATE dataTables SET lastUpdate2='" + lastUpdate2 + "', entryNo='" + entryNo + "' WHERE tableName='" + tableName + "'";
 
+            postElement = postElement + "; " + postElement2;
+
             postDb (postElement);
             postDb (postElement2);
             location.reload();
         }
         else{
-            var postElement = "UPDATE " + myCookies.currTable + " SET UpdatedDate='" + UpdatedDate + "',UpdatedBy='" + UpdatedBy + "',";
+            if (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements'){
+                var postElement = "UPDATE " + myCookies.currTable + " SET UPDATED='" + UpdatedDate + "',UPDATED_BY='" + UpdatedBy + "',";
+            }
+            else {
+                var postElement = "UPDATE " + myCookies.currTable + " SET UpdatedDate='" + UpdatedDate + "',UpdatedBy='" + UpdatedBy + "',";
+            }
 
-            for(i=0; i<current["tableDef2"].length - 4;i++){
-                if(current["tableDef2"][i].title == "RecordDate"){
+            for(i=0; i<current["tableDef2"].length - 5;i++){
+                if(current["tableDef2"][i].data == null){}
+                else if(current["tableDef2"][i].title == "RecordDate" && myCookies.currTable != "dt_divisional_kpis.audit_reviews_and_assurances" && myCookies.currTable != 'dt_divisional_kpis.contracts_and_procurements' && myCookies.currTable != 'dt_divisional_kpis.technical_services'){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDate(document.getElementById(thisID).value);
-                    postElement = postElement + currField + "='" + currData + "',"
+                    postElement = postElement + currField + "='" + currData + "',";
                 }
-                else if(current["tableDef2"][i].type == "Date"){
+                else if(current["tableDef2"][i].type == "Date" && current["tableDef2"][i].title != "RecordDate"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDate(document.getElementById(thisID).value);
-                    postElement = postElement + currField + "='" + currData + "',"
+                    if (currData == 'NaN-NaN-NaN'){
+                        postElement = postElement + currField + "='',"
+                    }
+                    else{
+                        postElement = postElement + currField + "='" + currData + "',"
+                    }
                 }
                 else if(current["tableDef2"][i].type == "DateTime"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = formatDateTime(document.getElementById(thisID).value);
+                    if (currData == 'NaN-NaN-NaN'){
+                        postElement = postElement + currField + "='',"
+                    }
+                    else{
+                        postElement = postElement + currField + "='" + currData + "',"
+                    }
+                }
+                else if(current["tableDef2"][i].type == "Drop-down List"){
+                    var thisID = String(current["tableDef2"][i].title)
+                    var currField = thisID;
+                    var a = document.getElementById(thisID);
+                    var currData = a.options[a.selectedIndex].text;
                     postElement = postElement + currField + "='" + currData + "',"
                 }
-                else{
+                else if(current["tableDef2"][i].data == "Planned_Availability"){}
+                else if (current["tableDef2"][i].title != "RecordDate"){
                     var thisID = String(current["tableDef2"][i].title)
                     var currField = thisID;
                     var currData = document.getElementById(thisID).value;
                     postElement = postElement + currField + "='" + currData + "',"
                 }
             }
-            postElement = postElement.substring(0, postElement.length - 1) + " WHERE id = " + currentRow["id"];
+
+            if (myCookies.currTable == "dt_divisional_kpis.audit_reviews_and_assurances" || myCookies.currTable == 'dt_divisional_kpis.contracts_and_procurements' || myCookies.currTable == 'dt_divisional_kpis.technical_services'){
+                postElement = postElement.substring(0, postElement.length - 1) + " WHERE RECORD_ID = " + unRender(currentRow["RecordDate"]);
+            }
+            else {
+                postElement = postElement.substring(0, postElement.length - 1) + " WHERE id = " + currentRow["id"];
+            }
 
             var postElement2 = "UPDATE dataTables SET lastUpdate2='" + lastUpdate2 + "', entryNo='" + entryNo + "' WHERE tableName='" + tableName + "'";
 
+            postElement = postElement + "; " + postElement2;
             postDb (postElement);
-            postDb (postElement2);
             location.reload();
         }
         
@@ -488,8 +777,8 @@ function yyyymmmdd(d, sep) {
     var dd = d.getDate();           
     return [(dd>9 ? '' : '0') + dd,
         months[d.getMonth()],
-        d.getFullYear()
-    ].join(sep || ' ');
+        (String(d.getFullYear())).slice(-2)
+    ].join(sep || '-');
 
 };
 
@@ -520,12 +809,27 @@ function dateRender( date ) {
     }
 }
 
+function dateRender2( ID ) {
+	if (ID != "" && String(ID) != "undefined") {
+        var yyyy = ID.substring(0,4)
+        var mm = ID.substring(4,6)
+        var dd = ID.substring(6,8)
+        var date = yyyy + "-" + mm + "-" + dd;
+        return dateRender(date)
+    }
+}
+
+function unRender(date){
+    return date.replace(/-/g,"");
+}
+
 function noRender(data){
     return data;
 }
 
     
 var months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var monthNo = ["01","02","03","04","05","06","07","08","09","10","11","12"];
 
 function formatDate2(data, type, row) {
     var d = new Date(data),
@@ -582,7 +886,7 @@ function fmtDateTime(date) {
 		return "";
 	}
 	else {
-        var date = date.split("-");
+        var date = date.split(" ");
         var dateParts = date[0];
         var timeParts = date[1];
         var d = new Date(dateParts),
@@ -620,6 +924,21 @@ function formatDateTime(date) {
 	}
 }
 
+function getList(col){
+    var selList = '<option value=""></option>';
+
+    for(var i=0; i<current["List"].length; i++){
+        if(col == current["List"][i].data){
+            var dropList = current["List"][i].list;
+            dropList = dropList.split(',')
+        }
+    }
+    for(var j=0; j<dropList.length; j++){
+        selList = selList + '<option value="' + dropList[j] + '">' + dropList[j] + '</option>'
+    }
+    return selList
+}
+
 function dateTimeRender( date ) {
     if (date == "") {
 		return "";
@@ -630,7 +949,7 @@ function dateTimeRender( date ) {
         var timeParts = date[1];
 		var dd = dateParts;
         var d=  new Date(dd);
-        return yyyymmmdd(d) + "-" + timeParts.substring(0,5);
+        return yyyymmmdd(d) + " " + timeParts.substring(0,5);
     }
     else{
         return "<Null>";
@@ -669,8 +988,6 @@ function convDate(date) {
 		month = dateParts[1],
         day = dateParts[0],
         year = dateParts[2];
-
-
 
         return [year, month, day].join('-');
 	}
@@ -727,6 +1044,10 @@ $('#delAll').on('click', function () {
         location.reload();
     } else {}
 });
+
+function openFolder(){
+    runBat('fileName');
+}
 /*
 $('#upload2').on('click', function () {
     runBat('fileName');
@@ -813,7 +1134,7 @@ function convDate(d){
 
     return dformat;
 }
-
+/*
 onInactive(3 * 60 * 1000, function () {
     document.getElementById('session').style.display='block';
     // Set the date we're counting down to
@@ -874,3 +1195,79 @@ var x = setInterval(function() {
   // Output the result in an element with id="timeLeft"
   document.getElementById("timeLeft").innerHTML = minutes + "m " + seconds + "s ";
 }, 1000);
+*/
+function reloadPage(){
+    $("#dataEntry").dataTable().fnDestroy()
+    $.ajax({
+        url : 'php/getUser.php', // your php file
+        type : 'GET', // type of the HTTP request
+        success : function(data){
+            var obj = data.split('\\');
+            var userName = obj[1];
+            processUser(userName);
+            $.ajax({
+                url : 'php/getAdminUsers.php', // your php file
+                type : 'GET', // type of the HTTP request
+                cache: false,
+                success : function(data){
+                    var obj = jQuery.parseJSON(data);
+                    processAdmUsers(obj);
+                    $.ajax({
+                        url : 'php/getUsersData.php', // your php file
+                        type : 'GET', // type of the HTTP request
+                        cache: false,
+                        success : function(data){
+                            var obj = jQuery.parseJSON(data);
+                            processUsers(obj);
+                            $.ajax({
+                                url : 'php/getDTUsers.php', // your php file
+                                type : 'GET', // type of the HTTP request
+                                cache: false,
+                                success : function(data){
+                                    var obj = jQuery.parseJSON(data);
+                                    processDTUsers(obj);
+                                    $.ajax({
+                                        url : 'php/getActiveDir.php', // your php file
+                                        type : 'GET', // type of the HTTP request
+                                        cache: false,
+                                        success : function(data){
+                                            var obj = jQuery.parseJSON(data);
+                                            getActiveDir(obj);
+                                            $.ajax({
+                                                url : 'php/getDataTables.php', // your php file
+                                                type : 'GET', // type of the HTTP request
+                                                cache: false,
+                                                success : function(data){
+                                                    var obj = jQuery.parseJSON(data);
+                                                    getTables(obj);
+                                                    $.ajax({
+                                                        url : 'php/getDataFields.php', // your php file
+                                                        type : 'GET', // type of the HTTP request
+                                                        cache: false,
+                                                        success : function(data){
+                                                            var obj = jQuery.parseJSON(data);
+                                                            getFields(obj);
+                                                            $.ajax({
+                                                                url : 'php/getData.php', // your php file
+                                                                type : 'GET', // type of the HTTP request
+                                                                cache: false,
+                                                                success : function(data){
+                                                                    var obj = jQuery.parseJSON(data);
+                                                                    setupTable(obj);
+                                                                }
+                                                            });
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        }
+    });
+}

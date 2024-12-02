@@ -184,7 +184,7 @@ function getTables(data){
             }
         }
     })
-    postVisit();
+    //postVisit();
 }
 
 function checkName(){
@@ -414,7 +414,7 @@ function convDate(d){
 
     return dformat;
 }
-
+/*
 onInactive(3 * 60 * 1000, function () {
     document.getElementById('session').style.display='block';
     // Set the date we're counting down to
@@ -475,3 +475,4 @@ var x = setInterval(function() {
   // Output the result in an element with id="timeLeft"
   document.getElementById("timeLeft").innerHTML = minutes + "m " + seconds + "s ";
 }, 1000);
+*/
